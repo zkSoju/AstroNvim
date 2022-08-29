@@ -321,7 +321,7 @@ function astronvim.status.provider.lsp_client_names(opts)
   opts = astronvim.default_tbl(opts, { expand_null_ls = true, truncate = 0.25 })
   return function()
     local buf_client_names = {}
-    for _, client in pairs(vim.lsp.buf_get_clients(0)) do
+    for _, client in pairs(vim.lsp.get_active_clients { bufnr = 0 }) do
       if client.name == "null-ls" and opts.expand_null_ls then
         vim.list_extend(buf_client_names, astronvim.null_ls_sources(vim.bo.filetype, "FORMATTING"))
         vim.list_extend(buf_client_names, astronvim.null_ls_sources(vim.bo.filetype, "DIAGNOSTICS"))
