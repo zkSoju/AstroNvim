@@ -99,6 +99,14 @@
 	<td class="summary">A provider function for the fill string</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#astronvim.status.provider.macro_recording">astronvim.status.provider.macro_recording(opts)</a></td>
+	<td class="summary">A provider function for displaying if a macro is currently being recorded</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#astronvim.status.provider.mode_text">astronvim.status.provider.mode_text(opts)</a></td>
+	<td class="summary">A provider function for showing the text of the current vim mode</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#astronvim.status.provider.percentage">astronvim.status.provider.percentage(opts)</a></td>
 	<td class="summary">A provider function for showing the percentage of the current location in a document</td>
 	</tr>
@@ -175,12 +183,24 @@
 	<td class="summary">A condition function if the buffer filetype,buftype,bufname match a pattern</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#astronvim.status.condition.is_macro_recording">astronvim.status.condition.is_macro_recording()</a></td>
+	<td class="summary">A condition function if a macro is being recorded</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#astronvim.status.condition.is_git_repo">astronvim.status.condition.is_git_repo()</a></td>
 	<td class="summary">A condition function if the current file is in a git repo</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#astronvim.status.condition.git_changed">astronvim.status.condition.git_changed()</a></td>
 	<td class="summary">A condition function if there are any git changes</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#astronvim.status.condition.file_modified">astronvim.status.condition.file_modified(bufnr)</a></td>
+	<td class="summary">A condition function if the current buffer is modified</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#astronvim.status.condition.file_read_only">astronvim.status.condition.file_read_only(bufnr)</a></td>
+	<td class="summary">A condition function if the current buffer is read only</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#astronvim.status.condition.has_diagnostics">astronvim.status.condition.has_diagnostics()</a></td>
@@ -217,6 +237,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#astronvim.status.component.nav">astronvim.status.component.nav(opts)</a></td>
 	<td class="summary">A function to build a set of children components for an entire navigation section</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#astronvim.status.component.macro_recording">astronvim.status.component.macro_recording(opts)</a></td>
+	<td class="summary">A function to build a set of children components for a macro recording section</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#astronvim.status.component.mode">astronvim.status.component.mode(opts)</a></td>
@@ -470,6 +494,72 @@
     <h3>Usage:</h3>
     <ul>
         <pre class="example"><span class="keyword">local</span> heirline_component = { provider = astronvim.status.provider.fill }</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "astronvim.status.provider.macro_recording"></a>
+    <strong>astronvim.status.provider.macro_recording(opts)</strong>
+    </dt>
+    <dd>
+    A provider function for displaying if a macro is currently being recorded
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+         a prefix before the recording register and options passed to the stylize function
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a function that returns a string of the current recording status
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../modules/core.utils.status.html#astronvim.status.utils.stylize">astronvim.status.utils.stylize</a>
+    </ul>
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> heirline_component = { provider = astronvim.status.provider.macro_recording() }</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "astronvim.status.provider.mode_text"></a>
+    <strong>astronvim.status.provider.mode_text(opts)</strong>
+    </dt>
+    <dd>
+    A provider function for showing the text of the current vim mode
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+         options for padding the text and options passed to the stylize function
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the function for displaying the text of the current vim mode
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../modules/core.utils.status.html#astronvim.status.utils.stylize">astronvim.status.utils.stylize</a>
+    </ul>
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> heirline_component = { provider = astronvim.status.provider.mode_text() }</pre>
     </ul>
 
 </dd>
@@ -1089,6 +1179,29 @@
 
 </dd>
     <dt>
+    <a name = "astronvim.status.condition.is_macro_recording"></a>
+    <strong>astronvim.status.condition.is_macro_recording()</strong>
+    </dt>
+    <dd>
+    A condition function if a macro is being recorded
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        boolean of wether or not a macro is currently being recorded
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> heirline_component = { provider = <span class="string">"Example Provider"</span>, condition = astronvim.status.condition.is_macro_recording }</pre>
+    </ul>
+
+</dd>
+    <dt>
     <a name = "astronvim.status.condition.is_git_repo"></a>
     <strong>astronvim.status.condition.is_git_repo()</strong>
     </dt>
@@ -1131,6 +1244,68 @@
     <h3>Usage:</h3>
     <ul>
         <pre class="example"><span class="keyword">local</span> heirline_component = { provider = <span class="string">"Example Provider"</span>, condition = astronvim.status.condition.git_changed }</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "astronvim.status.condition.file_modified"></a>
+    <strong>astronvim.status.condition.file_modified(bufnr)</strong>
+    </dt>
+    <dd>
+    A condition function if the current buffer is modified
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">bufnr</span>
+
+
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        boolean of wether or not the current buffer is modified
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> heirline_component = { provider = <span class="string">"Example Provider"</span>, condition = astronvim.status.condition.file_modified }</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "astronvim.status.condition.file_read_only"></a>
+    <strong>astronvim.status.condition.file_read_only(bufnr)</strong>
+    </dt>
+    <dd>
+    A condition function if the current buffer is read only
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">bufnr</span>
+
+
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        boolean of wether or not the current buffer is read only or not modifiable
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> heirline_component = { provider = <span class="string">"Example Provider"</span>, condition = astronvim.status.condition.file_read_only }</pre>
     </ul>
 
 </dd>
@@ -1359,6 +1534,35 @@
     <h3>Usage:</h3>
     <ul>
         <pre class="example"><span class="keyword">local</span> heirline_component = astronvim.status.component.nav()</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "astronvim.status.component.macro_recording"></a>
+    <strong>astronvim.status.component.macro_recording(opts)</strong>
+    </dt>
+    <dd>
+    A function to build a set of children components for a macro recording section
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+         options for configuring macro recording and the overall padding
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The Heirline component table
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> heirline_component = astronvim.status.component.macro_recording()</pre>
     </ul>
 
 </dd>
@@ -1785,7 +1989,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-10-10 19:51:36 </i>
+<i style="float:right;">Last updated 2022-10-12 14:14:14 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
