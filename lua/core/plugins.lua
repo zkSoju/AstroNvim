@@ -102,10 +102,10 @@ local astro_plugins = {
   },
 
   -- Completion engine
-  ["hrsh7th/nvim-cmp"] = {
-    event = "InsertEnter",
-    config = function() require "configs.cmp" end,
-  },
+  ["hrsh7th/nvim-cmp"] = { config = function() require "configs.cmp" end },
+
+  -- cmdline completion source
+  ["hrsh7th/cmp-cmdline"] = { after = "nvim-cmp" },
 
   -- Snippet completion source
   ["saadparwaiz1/cmp_luasnip"] = {

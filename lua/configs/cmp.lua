@@ -85,7 +85,32 @@ setup(astronvim.user_plugin_opts("plugins.cmp", {
     }),
   },
 }))
-for setup_opt, setup_table in pairs(astronvim.user_plugin_opts("cmp.setup", {})) do
+local cmp_setups = {}
+if astronvim.is_available "cmp-cmdline" then
+  local fallback_func = function(func)
+    return function(fallback)
+      if cmp.visible() then
+        cmp[func]()
+      else
+        fallback()
+      end
+    end
+  end
+  local mappings = cmp.mapping.preset.cmdline {
+    ["<C-j>"] = { c = fallback_func "select_next_item" },
+    ["<C-k>"] = { c = fallback_func "select_prev_item" },
+    ["<Down>"] = { c = fallback_func "select_next_item" },
+    ["<Up>"] = { c = fallback_func "select_prev_item" },
+  }
+  local cmd_search = { mapping = mappings, sources = { { name = "buffer" } } }
+
+  cmp_setups.cmdline = {
+    [":"] = { mapping = mappings, sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }) },
+    ["/"] = cmd_search,
+    ["?"] = cmd_search,
+  }
+end
+for setup_opt, setup_table in pairs(astronvim.user_plugin_opts("cmp.setup", cmp_setups)) do
   for pattern, options in pairs(setup_table) do
     setup[setup_opt](pattern, options)
   end
