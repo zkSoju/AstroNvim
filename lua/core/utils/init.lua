@@ -104,12 +104,16 @@ end
 -- @param name highlight group name
 -- @return table of highlight group properties
 function astronvim.get_hlgroup(name, fallback)
-  local hl = vim.fn.hlexists(name) == 1 and vim.api.nvim_get_hl_by_name(name, vim.o.termguicolors) or {}
-  return astronvim.default_tbl(
-    vim.o.termguicolors and { fg = hl.foreground, bg = hl.background, sp = hl.special }
-      or { cterfm = hl.foreground, ctermbg = hl.background },
-    fallback
-  )
+  if vim.fn.hlexists(name) == 1 then
+    local hl = vim.api.nvim_get_hl_by_name(name, vim.o.termguicolors)
+    if not hl["foreground"] then hl["foreground"] = "NONE" end
+    if not hl["background"] then hl["background"] = "NONE" end
+    hl.fg, hl.bg, hl.sp = hl.foreground, hl.background, hl.special
+    hl.ctermfg, hl.ctermbg = hl.foreground, hl.background
+    return hl
+  else
+    return fallback
+  end
 end
 
 --- Trim a string or return nil
@@ -255,17 +259,19 @@ function astronvim.user_plugin_opts(module, default, extend, prefix)
   return default
 end
 
---- Open a URL under the cursor with the current operating system
-function astronvim.url_opener()
-  -- if mac use the open command
+--- Open a URL under the cursor with the current operating system (Supports Mac OS X and *nix)
+-- @param path the path of the file to open with the system opener
+function astronvim.system_open(path)
+  path = path or vim.fn.expand "<cfile>"
   if vim.fn.has "mac" == 1 then
-    vim.fn.jobstart({ "open", vim.fn.expand "<cfile>" }, { detach = true })
-    -- if unix then use xdg-open
+    -- if mac use the open command
+    vim.fn.jobstart({ "open", path }, { detach = true })
   elseif vim.fn.has "unix" == 1 then
-    vim.fn.jobstart({ "xdg-open", vim.fn.expand "<cfile>" }, { detach = true })
-    -- if any other operating system notify the user that there is currently no support
+    -- if unix then use xdg-open
+    vim.fn.jobstart({ "xdg-open", path }, { detach = true })
   else
-    astronvim.notify("gx is not supported on this OS!", "error")
+    -- if any other operating system notify the user that there is currently no support
+    astronvim.notify("System open is not supported on this OS!", "error")
   end
 end
 
@@ -274,22 +280,16 @@ end
 
 --- Toggle a user terminal if it exists, if not then create a new one and save it
 -- @param term_details a terminal command string or a table of options for Terminal:new() (Check toggleterm.nvim documentation for table format)
-function astronvim.toggle_term_cmd(term_details)
+function astronvim.toggle_term_cmd(opts)
+  local terms = astronvim.user_terminals
   -- if a command string is provided, create a basic table for Terminal:new() options
-  if type(term_details) == "string" then term_details = { cmd = term_details, hidden = true } end
-  -- use the command as the key for the table
-  local term_key = term_details.cmd
-  -- set the count in the term details
-  if vim.v.count > 0 and term_details.count == nil then
-    term_details.count = vim.v.count
-    term_key = term_key .. vim.v.count
-  end
+  if type(opts) == "string" then opts = { cmd = opts, hidden = true } end
+  local num = vim.v.count > 0 and vim.v.count or 1
   -- if terminal doesn't exist yet, create it
-  if astronvim.user_terminals[term_key] == nil then
-    astronvim.user_terminals[term_key] = require("toggleterm.terminal").Terminal:new(term_details)
-  end
+  if not terms[opts.cmd] then terms[opts.cmd] = {} end
+  if not terms[opts.cmd][num] then terms[opts.cmd][num] = require("toggleterm.terminal").Terminal:new(opts) end
   -- toggle the terminal
-  astronvim.user_terminals[term_key]:toggle()
+  astronvim.user_terminals[opts.cmd][num]:toggle()
 end
 
 --- Add a source to cmp
@@ -372,20 +372,6 @@ function astronvim.null_ls_providers(filetype)
   end
   -- return the found null-ls sources
   return registered
-end
-
---- Register a null-ls source given a name if it has not been manually configured in the null-ls configuration
--- @param source the source name to register from all builtin types
-function astronvim.null_ls_register(source)
-  -- try to load null-ls
-  local null_ls_avail, null_ls = pcall(require, "null-ls")
-  if null_ls_avail then
-    if null_ls.is_registered(source) then return end
-    for _, type in ipairs { "diagnostics", "formatting", "code_actions", "completion", "hover" } do
-      local builtin = require("null-ls.builtins._meta." .. type)
-      if builtin[source] then null_ls.register(null_ls.builtins[type][source]) end
-    end
-  end
 end
 
 --- Get the null-ls sources for a given null-ls method
